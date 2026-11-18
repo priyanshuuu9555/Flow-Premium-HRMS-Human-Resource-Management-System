@@ -1,41 +1,45 @@
-/**
- * API base layer — abstracted so the UI never talks to data sources directly.
- *
- * Currently backed by in-memory mock data with simulated network latency.
- * When the Spring Boot backend is ready, swap the mock adapters in each
- * service file for real `fetch` calls against API_BASE_URL — the function
- * signatures and return types stay the same, so no UI changes are needed.
- *
- * Future: React → REST API → Spring Boot → Spring Data JPA → MySQL
- */
 
-export const API_BASE_URL =
-  (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_BASE_URL
-  || 'http://localhost:8080/api';
+export const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
-const LATENCY = 350;
+// Simulated delay for services that still use mock data
+export const delay = (ms = 350) =>
+  new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-export const delay = (ms: number = LATENCY) => new Promise((r) => setTimeout(r, ms));
-
-/** Generic fetch wrapper ready for the future Spring Boot backend. */
+// Generic API request wrapper
 export async function apiRequest<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
-    ...options,
-  });
-  if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
-  return (await res.json()) as T;
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  } catch {
+    throw new Error(
+      'Cannot connect to Django backend. Check whether runserver is running.'
+    );
+  }
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(`API ${response.status}: ${text}`);
+  }
+
+  return text ? JSON.parse(text) as T : null as T;
 }
 
-/** In-memory mock store with CRUD helpers + simulated latency. */
+// In-memory mock store for services not yet connected to Django
 export class MockStore<T extends { id: string }> {
   private items: T[];
 
   constructor(initial: T[]) {
-    // defensive copy so the original import is never mutated
     this.items = [...initial];
   }
 
@@ -46,7 +50,7 @@ export class MockStore<T extends { id: string }> {
 
   async get(id: string): Promise<T | undefined> {
     await delay();
-    return this.items.find((i) => i.id === id);
+    return this.items.find((item) => item.id === id);
   }
 
   async create(item: T): Promise<T> {
@@ -57,18 +61,27 @@ export class MockStore<T extends { id: string }> {
 
   async update(id: string, patch: Partial<T>): Promise<T> {
     await delay();
-    const idx = this.items.findIndex((i) => i.id === id);
-    if (idx === -1) throw new Error('Record not found');
-    this.items[idx] = { ...this.items[idx], ...patch, id };
-    return this.items[idx];
+
+    const index = this.items.findIndex((item) => item.id === id);
+
+    if (index === -1) {
+      throw new Error('Record not found');
+    }
+
+    this.items[index] = {
+      ...this.items[index],
+      ...patch,
+      id,
+    };
+
+    return this.items[index];
   }
 
   async remove(id: string): Promise<void> {
     await delay();
-    this.items = this.items.filter((i) => i.id !== id);
+    this.items = this.items.filter((item) => item.id !== id);
   }
 
-  /** Synchronous snapshot for immediate reads (dashboard stats, etc.). */
   snapshot(): T[] {
     return [...this.items];
   }
