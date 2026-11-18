@@ -14,21 +14,29 @@ The application follows a frontend-backend architecture, with React handling the
 - User login and registration functionality.
 - Authentication-related API integration.
 - Secure handling of user credentials.
+- <img width="1783" height="872" alt="image" src="https://github.com/user-attachments/assets/ba97a752-425e-47c3-8d9d-a569d656826a" />
+
 
 ### 2. Employee Management
 - Manage employee information.
 - Organize employee records.
 - Support employee-related administrative operations.
+- <img width="1852" height="888" alt="image" src="https://github.com/user-attachments/assets/c0beb2e7-a481-464b-882a-513414e18f26" />
+
 
 ### 3. Attendance Management
 - Track employee attendance.
 - Manage attendance records.
 - Monitor workforce attendance activities.
+- <img width="1866" height="890" alt="image" src="https://github.com/user-attachments/assets/ab079951-d2bf-4ded-a53e-c0acc7242725" />
+
 
 ### 4. Leave Management
 - Manage employee leave requests.
 - Track leave information and records.
 - Simplify leave administration.
+- <img width="1841" height="875" alt="image" src="https://github.com/user-attachments/assets/0dbd02b0-7ce5-45aa-8beb-742a5a36aa26" />
+
 
 ### 5. Dashboard & Analytics
 - Centralized HR dashboard.
