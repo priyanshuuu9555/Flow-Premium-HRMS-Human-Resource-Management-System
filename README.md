@@ -34,6 +34,8 @@ The application follows a frontend-backend architecture, with React handling the
 - Centralized HR dashboard.
 - Workforce overview and activity monitoring.
 - Visual presentation of HR-related information.
+- <img width="1877" height="891" alt="image" src="https://github.com/user-attachments/assets/cbfe9cd5-8ef2-4d10-8187-7a07e0627316" />
+
 
 ## Technology Stack
 
